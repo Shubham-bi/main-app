@@ -37,7 +37,7 @@ jobs:
         if: success()
         run: |
           if [ -f "downloaded-status/selenium-test-status.txt" ]; then
-            echo "✅ Selenium Test Status:"
+            echo "✅  Selenium Test Status:"
             cat downloaded-status/selenium-test-status.txt
           else
             echo "⚠️ Test result file not found!"
