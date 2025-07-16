@@ -13,7 +13,7 @@ jobs:
       - name: Trigger Selenium Test Repo
         run: |
           curl -X POST \
-            -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+            -H "Authorization: token ${{ secrets.Trigger_Selenium_Workflow_PAT }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/YOUR-USERNAME/selenium-tests/dispatches \
             -d '{"event_type":"run-selenium"}'
