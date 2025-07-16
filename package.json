@@ -3,5 +3,24 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node app.js"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shubham-bi/main-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shubham-bi/main-app/issues"
+  },
+  "homepage": "https://github.com/Shubham-bi/main-app#readme",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
   }
 }

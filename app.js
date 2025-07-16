@@ -1,10 +1,18 @@
-const http = require('http');
+const express = require('express');
+const path = require('path');
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  res.end('<h1>Hello from Developer App!</h1>');
+const app = express();
+
+// Serve static files from "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Default route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
-server.listen(3000, () => {
-  console.log('App running on http://localhost:3000');
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🌐 Jalvitaran clone running at http://localhost:${PORT}`);
 });
