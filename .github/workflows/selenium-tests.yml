@@ -1,5 +1,6 @@
-# .github/workflows/trigger-tests.yml
-name: Trigger Selenium Tests in Other Repo
+# main-app/.github/workflows/trigger-and-check.yml
+
+name: Trigger and Verify Selenium Tests
 
 on:
   push:
@@ -10,9 +11,34 @@ jobs:
   trigger-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Selenium Test Workflow
+      - name: 🧪 Trigger Selenium Test Workflow
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.Access_Token }}
-          repository: ShubhamK-STPL/my_cicd
+          repository: ShubhamK-STPL/selenium-cicd-tests
           event-type: run-selenium-tests
+
+  check-test-status:
+    needs: trigger-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🕒 Wait for tests to complete
+        run: sleep 60  # Wait for 1 minute (adjust if needed)
+
+      - name: 📦 Download Selenium Status File
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: run-selenium-tests.yml
+          name: selenium-test-status
+          repo: ShubhamK-STPL/selenium-cicd-tests
+          github_token: ${{ secrets.Access_Token }}
+
+      - name: ✅ Check test status
+        run: |
+          cat status.txt
+          if grep -q "FAILURE" status.txt; then
+            echo "❌ Selenium tests failed."
+            exit 1
+          else
+            echo "✅ Selenium tests passed."
+          fi
