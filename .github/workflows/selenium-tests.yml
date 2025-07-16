@@ -20,22 +20,24 @@ jobs:
     needs: trigger-tests
     runs-on: ubuntu-latest
     steps:
-      - name: ⏳ Wait for tests to finish (adjust time as needed)
+      - name: ⏳ Wait for tests to finish
         run: sleep 90
 
       - name: 📥 Try Downloading Selenium Test Status
         uses: dawidd6/action-download-artifact@v2
         continue-on-error: true
         with:
-          workflow: run-selenium-tests.yml
           name: selenium-test-status
-          repo: ShubhamK-STPL/my_cicd
           path: downloaded-status
+          repo: ShubhamK-STPL/my_cicd
+          branch: main
+          workflow: run-selenium-tests.yml  # Make sure this matches exactly
 
-      - name: 📖 Show Test Result (if downloaded)
+      - name: 📖 Show Test Result
         if: success()
         run: |
           if [ -f "downloaded-status/selenium-test-status.txt" ]; then
+            echo "✅ Selenium Test Status:"
             cat downloaded-status/selenium-test-status.txt
           else
             echo "⚠️ Test result file not found!"
