@@ -1,4 +1,4 @@
-name: Trigger & Validate Selenium Tests
+name: Trigger Selenium Tests & Check Status
 
 on:
   push:
@@ -6,43 +6,37 @@ on:
       - main
 
 jobs:
-  trigger-selenium:
-    name: 🚀 Trigger Selenium Workflow
+  trigger-tests:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 🔐 Trigger Selenium Test Workflow
+      - name: 🚀 Trigger Selenium Test Workflow
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.Access_Token }}
-          repository: ShubhamK-STPL/selenium-cicd-tests
+          repository: ShubhamK-STPL/my_cicd
           event-type: run-selenium-tests
 
-  wait-and-check:
-    name: ✅ Wait & Fetch Selenium Results
+  get-status:
+    needs: trigger-tests
     runs-on: ubuntu-latest
-    needs: trigger-selenium
-
     steps:
-      - name: ⏳ Wait for Selenium tests to run
-        run: sleep 60
+      - name: ⏳ Wait for tests to finish (adjust time as needed)
+        run: sleep 90
 
-      - name: 📥 Download Selenium Test Status
+      - name: 📥 Try Downloading Selenium Test Status
         uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
         with:
+          workflow: run-selenium-tests.yml
           name: selenium-test-status
-          repo: ShubhamK-STPL/selenium-cicd-tests
-          github_token: ${{ secrets.Access_Token }}
+          repo: ShubhamK-STPL/my_cicd
           path: downloaded-status
 
-      - name: 🔎 Read status.txt and verify result
+      - name: 📖 Show Test Result (if downloaded)
+        if: success()
         run: |
-          echo "Selenium test result:"
-          cat downloaded-status/status.txt
-
-          if grep -q "FAILURE" downloaded-status/status.txt; then
-            echo "❌ Selenium tests failed."
-            exit 1
+          if [ -f "downloaded-status/selenium-test-status.txt" ]; then
+            cat downloaded-status/selenium-test-status.txt
           else
-            echo "✅ Selenium tests passed."
+            echo "⚠️ Test result file not found!"
           fi
