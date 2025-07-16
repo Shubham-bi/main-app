@@ -13,6 +13,6 @@ jobs:
       - name: Trigger Selenium Test Workflow
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.my_cicd_token}}
+          token: ${{ secrets.Access_Token }}
           repository: ShubhamK-STPL/my_cicd
           event-type: run-selenium-tests
