@@ -33,28 +33,44 @@ jobs:
       - name: 🔁 Trigger Selenium Workflow
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.ACCESS_TOKEN }}  # 🔁 UPDATE 1: Must be a PAT with access to ShubhamK-STPL/my_cicd
-          repository: ShubhamK-STPL/my_cicd   # 🔁 UPDATE 2: Correct repo name
+          token: ${{ secrets.ACCESS_TOKEN }}  # 🔐 Your PAT with `repo` access
+          repository: ShubhamK-STPL/my_cicd
           event-type: run-selenium-tests
 
   fetch-test-status:
     name: 📥 Fetch Selenium Test Result
     needs: trigger-selenium
     runs-on: ubuntu-latest
+
     steps:
-      - name: ⏳ Wait for tests to finish
+      - name: ⏳ Wait for Selenium to complete
         run: sleep 90
 
-      - name: 🧾 Download Result Artifact
-        uses: dawidd6/action-download-artifact@v2
-        continue-on-error: true
-        with:
-          name: selenium-test-status
-          path: downloaded-status
-          repo: ShubhamK-STPL/my_cicd           # 🔁 UPDATE 3: Correct repo name
-          workflow: run-selenium-tests.yml      # 🔁 UPDATE 4: Make sure this matches the workflow file name in my_cicd
-          github_token: ${{ secrets.ACCESS_TOKEN }}  # 🔁 UPDATE 5: Required to access private repo if applicable
-          branch: main
+      - name: 🧾 Get Selenium Test Artifact ID
+        id: get_artifact
+        run: |
+          response=$(curl -s -H "Authorization: Bearer ${{ secrets.ACCESS_TOKEN }}" \
+            https://api.github.com/repos/ShubhamK-STPL/my_cicd/actions/artifacts)
+
+          echo "Response received: $response"
+
+          id=$(echo "$response" | jq '.artifacts[] | select(.name=="selenium-test-status") | .id' | head -n 1)
+
+          if [ -z "$id" ]; then
+            echo "❌ Artifact ID not found"
+            exit 1
+          fi
+
+          echo "artifact_id=$id" >> $GITHUB_OUTPUT
+
+      - name: 🔽 Download Artifact from Other Repo
+        run: |
+          curl -L \
+            -H "Authorization: Bearer ${{ secrets.ACCESS_TOKEN }}" \
+            -o selenium-status.zip \
+            https://api.github.com/repos/ShubhamK-STPL/my_cicd/actions/artifacts/${{ steps.get_artifact.outputs.artifact_id }}/zip
+
+          unzip selenium-status.zip -d downloaded-status
 
       - name: 📖 Show Test Result
         run: |
