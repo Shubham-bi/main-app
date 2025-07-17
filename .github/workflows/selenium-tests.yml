@@ -9,8 +9,6 @@ jobs:
   setup-node:
     name: 🟢 Setup Node.js
     runs-on: ubuntu-latest
-    outputs:
-      node-folder: ${{ steps.set-output.outputs.node-folder }}
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v3
@@ -21,12 +19,8 @@ jobs:
           node-version: '20'
 
       - name: 📦 Install dependencies
-        working-directory: main-app
+        working-directory: ./main-app
         run: npm install
-
-      - name: Set node folder path
-        id: set-output
-        run: echo "node-folder=main-app" >> $GITHUB_OUTPUT
 
   run-node:
     name: 🚀 Run Node.js App
@@ -41,12 +35,12 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 📦 Install dependencies again (required for separate runner)
-        working-directory: main-app
+      - name: 📦 Install dependencies again (new runner)
+        working-directory: ./main-app
         run: npm install
 
       - name: 🟢 Start Node.js app in background
-        working-directory: main-app
+        working-directory: ./main-app
         run: |
           nohup npm start > app.log 2>&1 &
           sleep 10
@@ -56,9 +50,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: run-node
     steps:
-      - name: 🚀 Pull Selenium Docker
-        run: docker pull selenium/standalone-chrome:latest
-
       - name: 🧱 Run Selenium in background
         run: |
           docker run -d -p 4444:4444 --shm-size=2g selenium/standalone-chrome:latest
@@ -79,5 +70,5 @@ jobs:
           java-version: '22'
 
       - name: 🔧 Run Maven Selenium tests
-        working-directory: selenium-cicd-tests
+        working-directory: ./selenium-cicd-tests
         run: mvn test
