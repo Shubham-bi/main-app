@@ -16,3 +16,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🌐 Jalvitaran clone running at http://localhost:${PORT}`);
 });
+
+
+// Export the app for testing purposes
+
