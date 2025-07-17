@@ -33,8 +33,8 @@ jobs:
       - name: 🔁 Trigger Selenium Workflow
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.ACCESS_TOKEN }}
-          repository: ShubhamK-STPL/my_cicd
+          token: ${{ secrets.ACCESS_TOKEN }}  # 🔁 UPDATE 1: Must be a PAT with access to ShubhamK-STPL/my_cicd
+          repository: ShubhamK-STPL/my_cicd   # 🔁 UPDATE 2: Correct repo name
           event-type: run-selenium-tests
 
   fetch-test-status:
@@ -51,8 +51,9 @@ jobs:
         with:
           name: selenium-test-status
           path: downloaded-status
-          repo: OtherUser/selenium-cicd-tests
-          workflow: run-selenium-tests.yml
+          repo: ShubhamK-STPL/my_cicd           # 🔁 UPDATE 3: Correct repo name
+          workflow: run-selenium-tests.yml      # 🔁 UPDATE 4: Make sure this matches the workflow file name in my_cicd
+          github_token: ${{ secrets.ACCESS_TOKEN }}  # 🔁 UPDATE 5: Required to access private repo if applicable
           branch: main
 
       - name: 📖 Show Test Result
