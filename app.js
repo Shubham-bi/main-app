@@ -6,7 +6,7 @@ const app = express();
 // Serve static files from "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Default route
+// Default route  
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
